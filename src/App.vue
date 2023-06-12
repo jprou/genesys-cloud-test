@@ -1,6 +1,42 @@
 <script setup>
 import HelloWorld from './components/HelloWorld.vue'
 import TheWelcome from './components/TheWelcome.vue'
+import platformClient from 'purecloud-platform-client-v2'
+
+import { ref, onMounted } from 'vue'
+
+onMounted(() => {
+  debugger;
+    var client = platformClient.ApiClient.instance;
+    var clientId = "6ea9ac07-8f3f-4444-8800-f5cb40b13a41";
+    var redirectUri = "https://jp-cloud-test.onrender.com/";
+    var state = "test";
+
+    var notificationsApi = new platformClient.NotificationsApi();
+
+    client.loginImplicitGrant(clientId, redirectUri, { state: state })
+    .then((data) => {
+      debugger;
+        console.log("Authenticated" + data);
+        console.log(client.authData);
+        notificationsApi.postNotificationsChannels()
+        .then((channel) => {
+          debugger;
+            console.log(channel);
+            var socket = new WebSocket(channel.connectUri);
+            socket.onmessage = function (message) {
+              debugger;
+                console.log(message);
+            }
+            let topic = "v2.users." + client.authData.userId + ".conversations";
+            notificationsApi.postNotificationsChannelSubscriptions(channel.id, [{id: topic}])
+        })
+        .catch((err) => {
+          debugger;
+            console.log(err);
+        });
+    });
+})
 </script>
 
 <template>

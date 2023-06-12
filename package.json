@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "purecloud-client-app-sdk": "^2.6.3",
+    "purecloud-platform-client-v2": "^169.1.0",
     "vue": "^3.3.2"
   },
   "devDependencies": {
