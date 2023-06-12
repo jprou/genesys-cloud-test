@@ -12,10 +12,11 @@ onMounted(() => {
     var clientId = "6ea9ac07-8f3f-4444-8800-f5cb40b13a41";
     var redirectUri = "https://jp-cloud-test.onrender.com/";
     var state = "test";
+    var environment = "mypurecloud.ie";
 
     var notificationsApi = new platformClient.NotificationsApi();
 
-    client.loginImplicitGrant(clientId, redirectUri, { state: state })
+    client.loginImplicitGrant(clientId, redirectUri, { state: state, environment: environment })
     .then((data) => {
       debugger;
         console.log("Authenticated" + data);
