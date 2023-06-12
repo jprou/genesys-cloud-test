@@ -6,7 +6,7 @@ import platformClient from 'purecloud-platform-client-v2'
 import { ref, onMounted } from 'vue'
 
 onMounted(() => {
-  debugger;
+  console.log("Crossssss");
     var client = platformClient.ApiClient.instance;
     var clientId = "6ea9ac07-8f3f-4444-8800-f5cb40b13a41";
     var redirectUri = "https://jp-cloud-test.onrender.com/";
