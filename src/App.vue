@@ -8,7 +8,7 @@ import { ref, onMounted } from 'vue'
 onMounted(() => {
   console.log("Crossssss");
     var client = platformClient.ApiClient.instance;
-    client.environment = "mypurecloud.ie";
+    client.setEnvironment(platformClient.PureCloudRegionHosts.eu_west_1);
     console.log("Crossclient" + JSON.stringify(client));
     var clientId = "6ea9ac07-8f3f-4444-8800-f5cb40b13a41";
     var redirectUri = "https://jp-cloud-test.onrender.com/";
