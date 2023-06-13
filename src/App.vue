@@ -6,7 +6,11 @@ import platformClient from 'purecloud-platform-client-v2'
 import { ref, onMounted } from 'vue'
 
 onMounted(() => {
-  console.log("Crossssss");
+  let urlParams = new URLSearchParams(window.location.search);
+    // alert(`Your interaction id is: ${urlParams.get('id')}`);
+    console.log(`Your interaction id is: ${urlParams.get('id')}`)
+    let convoId = urlParams.get('id');
+
     var client = platformClient.ApiClient.instance;
     client.setEnvironment(platformClient.PureCloudRegionHosts.eu_west_1);
     console.log("Crossclient" + JSON.stringify(client));
@@ -31,7 +35,10 @@ onMounted(() => {
               debugger;
                 console.log(message);
             }
-            let topic = "v2.users." + client.authData.userId + ".conversations";
+
+            //v2.conversations.{id}.transcription
+
+            let topic = "v2.conversations." + convoId + ".transcription";
             notificationsApi.postNotificationsChannelSubscriptions(channel.id, [{id: topic}])
         })
         .catch((err) => {
