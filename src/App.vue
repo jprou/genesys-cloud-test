@@ -15,7 +15,7 @@ onMounted(() => {
     client.setEnvironment(platformClient.PureCloudRegionHosts.eu_west_1);
     console.log("Crossclient" + JSON.stringify(client));
     var clientId = "6ea9ac07-8f3f-4444-8800-f5cb40b13a41";
-    var redirectUri = "https://genesys-cloud-test.onrender.com/?id={{gcConversationId}}";
+    var redirectUri = "https://genesys-cloud-test.onrender.com/";
     var state = "test";
     var environment = "mypurecloud.ie";
 
@@ -38,7 +38,7 @@ onMounted(() => {
 
             //v2.conversations.{id}.transcription
 
-            let topic = "v2.conversations." + convoId + ".transcription";
+            let topic = "v2.conversations." + 'ab3762ec-a58e-4e24-9580-2364634ee51d' + ".transcription";
             notificationsApi.postNotificationsChannelSubscriptions(channel.id, [{id: topic}])
         })
         .catch((err) => {
