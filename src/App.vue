@@ -29,6 +29,8 @@ onMounted(() => {
 
   var notificationsApi = new platformClient.NotificationsApi();
 
+  var conversationsApi = new platformClient.ConversationsApi();
+
   const usersApi = new platformClient.UsersApi();
 
   let userId = null;
