@@ -50,8 +50,7 @@ onMounted(() => {
     })
     .then((userMe) => {
       console.log("UserMe" + JSON.stringify(userMe));
-    })
-    .then((userMe) => {
+  
       userId = userMe.id;
 
       // Get current conversation
