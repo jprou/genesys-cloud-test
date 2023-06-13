@@ -33,6 +33,8 @@ onMounted(() => {
 
   const usersApi = new platformClient.UsersApi();
 
+  let channel = null;
+
   let userId = null;
 
   client
