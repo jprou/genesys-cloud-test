@@ -1,58 +1,126 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-import platformClient from 'purecloud-platform-client-v2'
+import HelloWorld from "./components/HelloWorld.vue";
+import TheWelcome from "./components/TheWelcome.vue";
+import platformClient from "purecloud-platform-client-v2";
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted } from "vue";
 
 onMounted(() => {
   let urlParams = new URLSearchParams(window.location.search);
-    // alert(`Your interaction id is: ${urlParams.get('id')}`);
-    console.log(`Your interaction id is: ${urlParams.get('id')}`)
-    let convoId = urlParams.get('id');
+  // alert(`Your interaction id is: ${urlParams.get('id')}`);
+  console.log(`Your interaction id is: ${urlParams.get("id")}`);
+  let convoId = urlParams.get("id");
 
-    var client = platformClient.ApiClient.instance;
-    client.setEnvironment(platformClient.PureCloudRegionHosts.eu_west_1);
-    console.log("Crossclient" + JSON.stringify(client));
-    var clientId = "6ea9ac07-8f3f-4444-8800-f5cb40b13a41";
-    var redirectUri = "https://genesys-cloud-test.onrender.com/";
-    var state = "test";
-    var environment = "mypurecloud.ie";
-    
+  var client = platformClient.ApiClient.instance;
+  client.setEnvironment(platformClient.PureCloudRegionHosts.eu_west_1);
+  console.log("Crossclient" + JSON.stringify(client));
+  var clientId = "6ea9ac07-8f3f-4444-8800-f5cb40b13a41";
+  var redirectUri = "https://genesys-cloud-test.onrender.com/";
+  var state = convoId;
+  var environment = "mypurecloud.ie";
 
-    var notificationsApi = new platformClient.NotificationsApi();
+  let subscriptionMap = {
+    "channel.metadata": () => {
+      console.log("Notification heartbeat.");
+    },
+  };
 
-    client.loginImplicitGrant(clientId, redirectUri, { state: state, environment: environment })
+  var notificationsApi = new platformClient.NotificationsApi();
+
+  const usersApi = new platformClient.UsersApi();
+
+  client
+    .loginImplicitGrant(clientId, redirectUri, {
+      state: state,
+      environment: environment,
+    })
     .then((data) => {
-      debugger;
-        console.log("Authenticated" + JSON.stringify(data));
-        console.log(client.authData);
-        notificationsApi.postNotificationsChannels()
-        .then((channel) => {
-          debugger;
-            console.log(channel);
-            var socket = new WebSocket(channel.connectUri);
-            socket.onmessage = function (message) {
-              debugger;
-                console.log(message);
-            }
+      console.log("Authenticated" + JSON.stringify(data));
+      console.log(client.authData);
 
-            //v2.conversations.{id}.transcription
+      convoId = data.state;
 
-            let topic = "v2.conversations." + 'b9840c7a-750f-45ec-a2f7-c0e89b7e5cae' + ".transcription";
-            notificationsApi.postNotificationsChannelSubscriptions(channel.id, [{id: topic}])
-        })
-        .catch((err) => {
-          debugger;
-            console.log(err);
-        });
+      return usersApi.getUsersMe();
+    })
+    .then((userMe) => {
+        console.log("UserMe" + JSON.stringify(userMe));
+
     });
-})
+    // .then(() => {
+      // notificationsApi.postNotificationsChannels()
+      // .then((channel) => {
+      //   console.log('---- Created Notifications Channel ----');
+      //     console.log(data);
+      //     channel = data;
+      //     ws = new WebSocket(channel.connectUri);
+      //     ws.onmessage = onSocketMessage;
+      // })
+      // .catch((err) => {
+      //     console.log(err);
+      // });
+    // });
+
+  function onSocketMessage(event) {
+    let data = JSON.parse(event.data);
+
+    subscriptionMap[data.topicName](data);
+  }
+
+  function createChannel() {
+    return notificationsApi.postNotificationsChannels().then((data) => {
+      console.log("---- Created Notifications Channel ----");
+      console.log(data);
+
+      channel = data;
+      ws = new WebSocket(channel.connectUri);
+      ws.onmessage = onSocketMessage;
+    });
+  }
+
+  function addSubscription(topic, callback) {
+    let body = [{ id: topic }];
+
+    return notificationsApi
+      .postNotificationsChannelSubscriptions(channel.id, body)
+      .then((data) => {
+        subscriptionMap[topic] = callback;
+        console.log(`Added subscription to ${topic}`);
+      });
+  }
+
+  function setupChatChannel() {
+    return createChannel().then((data) => {
+      // Subscribe to incoming chat conversations
+      return addSubscription(
+        `v2.users.${userId}.conversations.chats`,
+        subscribeChatConversation(convoId)
+      );
+    });
+  }
+
+  /**
+   * Subscribes the conversation to the notifications channel
+   * @param {String} conversationId
+   * @returns {Promise}
+   */
+  function subscribeChatConversation(conversationId) {
+    return addSubscription(
+      `v2.conversations.chats.${conversationId}.messages`,
+      onMessage
+    );
+  }
+});
 </script>
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+    <img
+      alt="Vue logo"
+      class="logo"
+      src="./assets/logo.svg"
+      width="125"
+      height="125"
+    />
 
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
