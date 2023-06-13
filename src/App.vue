@@ -18,6 +18,7 @@ onMounted(() => {
     var redirectUri = "https://genesys-cloud-test.onrender.com/";
     var state = "test";
     var environment = "mypurecloud.ie";
+    
 
     var notificationsApi = new platformClient.NotificationsApi();
 
@@ -38,7 +39,7 @@ onMounted(() => {
 
             //v2.conversations.{id}.transcription
 
-            let topic = "v2.conversations." + 'ab3762ec-a58e-4e24-9580-2364634ee51d' + ".transcription";
+            let topic = "v2.conversations." + 'b9840c7a-750f-45ec-a2f7-c0e89b7e5cae' + ".transcription";
             notificationsApi.postNotificationsChannelSubscriptions(channel.id, [{id: topic}])
         })
         .catch((err) => {
