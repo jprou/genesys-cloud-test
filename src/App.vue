@@ -15,7 +15,7 @@ onMounted(() => {
     client.setEnvironment(platformClient.PureCloudRegionHosts.eu_west_1);
     console.log("Crossclient" + JSON.stringify(client));
     var clientId = "6ea9ac07-8f3f-4444-8800-f5cb40b13a41";
-    var redirectUri = "https://genesys-cloud-test.onrender.com/";
+    var redirectUri = "https://genesys-cloud-test.onrender.com/?id={{gcConversationId}}";
     var state = "test";
     var environment = "mypurecloud.ie";
 
