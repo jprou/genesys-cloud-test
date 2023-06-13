@@ -37,6 +37,8 @@ onMounted(() => {
 
   let userId = null;
 
+  let ws = null;
+
   client
     .loginImplicitGrant(clientId, redirectUri, {
       state: state,
