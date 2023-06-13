@@ -25,9 +25,13 @@ onMounted(() => {
     },
   };
 
+  let currentConversation = null;
+
   var notificationsApi = new platformClient.NotificationsApi();
 
   const usersApi = new platformClient.UsersApi();
+
+  let userId = null;
 
   client
     .loginImplicitGrant(clientId, redirectUri, {
@@ -43,22 +47,97 @@ onMounted(() => {
       return usersApi.getUsersMe();
     })
     .then((userMe) => {
-        console.log("UserMe" + JSON.stringify(userMe));
+      console.log("UserMe" + JSON.stringify(userMe));
+    })
+    .then((userMe) => {
+      userId = userMe.id;
 
+      // Get current conversation
+      return conversationsApi.getConversation(convoId);
+    })
+    .then((conv) => {
+      currentConversation = conv;
+
+      return setupChatChannel();
+    })
+    .then((data) => {
+      console.log("Finished Setup");
+
+      // Error Handling
+    })
+    .catch((e) => console.log(e));
+
+  // .then(() => {
+  // notificationsApi.postNotificationsChannels()
+  // .then((channel) => {
+  //   console.log('---- Created Notifications Channel ----');
+  //     console.log(data);
+  //     channel = data;
+  //     ws = new WebSocket(channel.connectUri);
+  //     ws.onmessage = onSocketMessage;
+  // })
+  // .catch((err) => {
+  //     console.log(err);
+  // });
+  // });
+
+  /**
+ * Set-up the channel for chat conversations
+ */
+function setupChatChannel(){
+    return createChannel()
+    .then(data => {
+        // Subscribe to incoming chat conversations
+        return addSubscription(
+            `v2.users.${userId}.conversations.chats`,
+            subscribeChatConversation(convoId));
     });
-    // .then(() => {
-      // notificationsApi.postNotificationsChannels()
-      // .then((channel) => {
-      //   console.log('---- Created Notifications Channel ----');
-      //     console.log(data);
-      //     channel = data;
-      //     ws = new WebSocket(channel.connectUri);
-      //     ws.onmessage = onSocketMessage;
-      // })
-      // .catch((err) => {
-      //     console.log(err);
-      // });
-    // });
+}
+
+/**
+ * Subscribes the conversation to the notifications channel
+ * @param {String} conversationId 
+ * @returns {Promise}
+ */
+function subscribeChatConversation(conversationId){
+    return addSubscription(
+            `v2.conversations.chats.${conversationId}.messages`,
+            onMessage);
+}
+
+let onMessage = (data) => {
+    switch(data.metadata.type){
+        case 'typing-indicator':
+            break;
+        case 'message':
+            // Values from the event
+            let eventBody = data.eventBody;
+            let message = eventBody.body;
+            let convId = eventBody.conversation.id;
+            let senderId = eventBody.sender.id;
+
+            // Conversation values for cross reference
+            let conversation = currentConversation;
+            let participant = conversation.participants.find(p => p.chats[0].id == senderId);
+            let purpose = participant.purpose;
+
+            // Get agent communication ID
+            if(purpose == 'agent') {
+                agentID = senderId;
+                agentAssistant.clearStackedText();
+            } else {
+                let agent = conversation.participants.find(p => p.purpose == 'agent');
+                agentID = agent.chats[0].id;
+            }
+
+            // // Get some recommended replies
+            // if(purpose == 'customer') agentAssistant.getRecommendations(message, convId, agentID);
+
+            console.log(data);
+
+            break;
+    }
+};
 
   function onSocketMessage(event) {
     let data = JSON.parse(event.data);
