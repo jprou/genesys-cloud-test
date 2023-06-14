@@ -96,7 +96,11 @@ function setupChatChannel(){
         return addSubscription(
             `v2.users.${userId}.conversations.chats`,
             subscribeChatConversation(convoId));
-    });
+    }).then(data => {
+        return addSubscription(
+            `v2.detail.events.conversation.${convoId}.contact`,
+            onMessage);
+    })
 }
 
 /**
@@ -111,6 +115,9 @@ function subscribeChatConversation(conversationId){
 }
 
 let onMessage = (data) => {
+  console.log(data);
+
+
     switch(data.metadata.type){
         case 'typing-indicator':
             break;
@@ -129,7 +136,6 @@ let onMessage = (data) => {
             // // Get some recommended replies
             // if(purpose == 'customer') agentAssistant.getRecommendations(message, convId, agentID);
 
-            console.log(data);
 
             break;
     }
