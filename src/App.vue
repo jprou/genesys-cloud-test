@@ -67,13 +67,14 @@ onMounted(() => {
     })
     .then((data) => {
 
-      debugger;
       return addSubscription(
             `v2.detail.events.conversation.${convoId}.contact`,
             onMessage);
-             console.log("Finished Setup");
+            
 
       // Error Handling
+    }).then(() => {
+      return addSubscription(`v2.detail.events.conversation.${convoId}.attributes`, onMessage); 
     })
     .catch((e) => console.log(e));
 
