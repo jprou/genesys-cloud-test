@@ -118,7 +118,7 @@ function subscribeChatConversation(conversationId){
 }
 
 let onMessage = (data) => {
-  console.log(data);
+  console.log("onMessage", data);
 
 
     switch(data.metadata.type){
@@ -145,8 +145,7 @@ let onMessage = (data) => {
 };
 
   function onSocketMessage(event) {
-    console.log(event);
-    let data = JSON.parse(event);
+    console.log("onSocketMessage", event);
 
     onMessage(event.data)
   }
