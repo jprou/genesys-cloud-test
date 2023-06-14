@@ -126,15 +126,6 @@ let onMessage = (data) => {
             let participant = conversation.participants.find(p => p.chats[0].id == senderId);
             let purpose = participant.purpose;
 
-            // Get agent communication ID
-            if(purpose == 'agent') {
-                agentID = senderId;
-                agentAssistant.clearStackedText();
-            } else {
-                let agent = conversation.participants.find(p => p.purpose == 'agent');
-                agentID = agent.chats[0].id;
-            }
-
             // // Get some recommended replies
             // if(purpose == 'customer') agentAssistant.getRecommendations(message, convId, agentID);
 
@@ -156,7 +147,7 @@ let onMessage = (data) => {
       console.log(data);
 
       channel = data;
-      ws = new WebSocket(channel.connectUri);
+      ws = new WebSocket(channel.connectUri); // TODO HERE
       ws.onmessage = onSocketMessage;
     });
   }
