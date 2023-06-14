@@ -148,7 +148,7 @@ let onMessage = (data) => {
     console.log(event);
     let data = JSON.parse(event);
 
-    subscriptionMap[data.topicName](data);
+    onMessage(event.data)
   }
 
   function createChannel() {
