@@ -145,7 +145,8 @@ let onMessage = (data) => {
 };
 
   function onSocketMessage(event) {
-    let data = JSON.parse(event.data);
+    console.log(event);
+    let data = JSON.parse(event);
 
     subscriptionMap[data.topicName](data);
   }
