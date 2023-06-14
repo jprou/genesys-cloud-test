@@ -120,28 +120,27 @@ function subscribeChatConversation(conversationId){
 let onMessage = (data) => {
   console.log("onMessage", data);
 
+    // switch(data.metadata.type){
+    //     case 'typing-indicator':
+    //         break;
+    //     case 'message':
+    //         // Values from the event
+    //         let eventBody = data.eventBody;
+    //         let message = eventBody.body;
+    //         let convId = eventBody.conversation.id;
+    //         let senderId = eventBody.sender.id;
 
-    switch(data.metadata.type){
-        case 'typing-indicator':
-            break;
-        case 'message':
-            // Values from the event
-            let eventBody = data.eventBody;
-            let message = eventBody.body;
-            let convId = eventBody.conversation.id;
-            let senderId = eventBody.sender.id;
+    //         // Conversation values for cross reference
+    //         let conversation = currentConversation;
+    //         let participant = conversation.participants.find(p => p.chats[0].id == senderId);
+    //         let purpose = participant.purpose;
 
-            // Conversation values for cross reference
-            let conversation = currentConversation;
-            let participant = conversation.participants.find(p => p.chats[0].id == senderId);
-            let purpose = participant.purpose;
-
-            // // Get some recommended replies
-            // if(purpose == 'customer') agentAssistant.getRecommendations(message, convId, agentID);
+    //         // // Get some recommended replies
+    //         // if(purpose == 'customer') agentAssistant.getRecommendations(message, convId, agentID);
 
 
-            break;
-    }
+    //         break;
+    // }
 };
 
   function onSocketMessage(event) {
