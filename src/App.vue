@@ -66,7 +66,12 @@ onMounted(() => {
       return setupChatChannel();
     })
     .then((data) => {
-      console.log("Finished Setup");
+
+      debugger;
+      return addSubscription(
+            `v2.detail.events.conversation.${convoId}.contact`,
+            onMessage);
+             console.log("Finished Setup");
 
       // Error Handling
     })
@@ -97,9 +102,7 @@ function setupChatChannel(){
             `v2.users.${userId}.conversations.chats`,
             subscribeChatConversation(convoId));
     }).then(data => {
-        return addSubscription(
-            `v2.detail.events.conversation.${convoId}.contact`,
-            onMessage);
+        
     })
 }
 
